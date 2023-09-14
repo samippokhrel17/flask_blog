@@ -30,9 +30,11 @@
                 {% else %}
                 {{ form.content(class="form-control form-control-lg") }}
                 {% endif %}
+                Published : {{ form.is_published(class="form-control form-control-lg") }}
             </div>
         </fieldset>
         <div class="form-group">
+            
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
     </form>

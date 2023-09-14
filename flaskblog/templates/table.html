@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+    
+    <h1></h1> List of User </h1>
+
+    <table>
+        <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 30px auto; /* Adds 20px margin on top and bottom, and centers the table */
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 10px;
+                text-align: center;
+            }
+        </style>
+        <tr>
+            <th>id</th>
+            <th>username</th>
+            <th>email</th>
+        </tr>
+        {% for user in data  %}
+        <tr>
+            <td>{{user.id}}</td>
+            <td>{{user.username}}</td>
+            <td>{{user.email}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

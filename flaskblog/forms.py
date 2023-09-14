@@ -14,6 +14,8 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password',
                                      validators=[DataRequired(), EqualTo('password')])
+    is_admin=BooleanField('Is Admin')
+
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
@@ -59,5 +61,6 @@ class UpdateAccountForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField('Title',validators=[DataRequired(), ])
-    content = TextAreaField('content',validators=[DataRequired()])
+    content = TextAreaField('Content',validators=[DataRequired()])
+    is_published=BooleanField('Publish')
     submit = SubmitField('Post')

@@ -1,17 +1,19 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request, abort
+from flask import render_template, url_for, flash, redirect, request, abort, session 
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from flaskblog.models import User, Post
 from flask_login import login_user, current_user, logout_user, login_required
 
 
+
+
 @app.route("/")
 @app.route("/home")
 def home():
-    posts = Post.query.all()
+    posts = Post.query.filter_by(is_published=True)
     return render_template('home.html', posts=posts)
 
 
@@ -97,7 +99,7 @@ def account():
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user)
+        post = Post(title=form.title.data, content=form.content.data, author=current_user,is_published=form.is_published.data)
         db.session.add(post)
         db.session.commit()
         flash('Your post has been created!', 'success')
@@ -142,3 +144,52 @@ def delete_post(post_id):
     db.session.commit()
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('home'))
+
+
+@app.route("/table")
+@login_required
+def table():
+    id = current_user.id
+    users= User.query.all()
+    if id ==1:
+        return render_template('table.html', title='Table',data=users)  
+    else:
+        flash("Sorry you must be the admin to access Admin Page") 
+        return redirect(url_for('home'))
+
+
+
+
+# @app.route("/creat_admin", methods=['GET', 'POST'])
+# def creat_admin():
+#     if request.method == 'POST':
+#         hashed_password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+#         new_user=User(email=request.form['email'],password=hashed_password,username=request.form['username'],is_admin=True)
+#         db.session.add(new_user)
+#         db.session.commit()
+#         return "Admin Account Created"
+    
+#     return render_template("admin_signup.html")
+
+
+
+
+
+@app.route("/creat_admin", methods=['GET', 'POST'])
+@login_required  # Add the login_required decorator
+def creat_admin():
+    # Check if the current user is an admin
+    
+    if not current_user.is_admin:
+        flash("You do not have permission to access this page.", "danger")
+        return redirect(url_for('home'))  # Redirect to another page (e.g., home page) or handle the access denial
+
+    if request.method == 'POST':
+        hashed_password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
+        new_user = User(email=request.form['email'], password=hashed_password, username=request.form['username'], is_admin=True)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("Admin Account Created", "success")
+        return redirect(url_for('home'))  # Redirect to another page after successful creation
+
+    return render_template("home.html")
