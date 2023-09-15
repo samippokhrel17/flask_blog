@@ -149,9 +149,9 @@ def delete_post(post_id):
 @app.route("/table")
 @login_required
 def table():
-    id = current_user.id
+    is_admin = current_user.is_admin
     users= User.query.all()
-    if id ==1:
+    if is_admin== True:
         return render_template('table.html', title='Table',data=users)  
     else:
         flash("Sorry you must be the admin to access Admin Page") 
@@ -189,7 +189,8 @@ def creat_admin():
         new_user = User(email=request.form['email'], password=hashed_password, username=request.form['username'], is_admin=True)
         db.session.add(new_user)
         db.session.commit()
+        print("hello")
         flash("Admin Account Created", "success")
         return redirect(url_for('home'))  # Redirect to another page after successful creation
 
-    return render_template("home.html")
+    return render_template("creat_admin.html")

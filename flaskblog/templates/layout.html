@@ -36,8 +36,11 @@
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
                 <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
 
-                {% if current_user.id==1 %}
+                {% if current_user.is_admin== True %}
                 <a class="nav-item nav-link" href="{{ url_for('table') }}">User List</a>
+                <a class="nav-item nav-link" href="{{ url_for('creat_admin') }}">Creat Admin</a>
+                <a class="nav-item nav-link" href="/admin"> Admin Pannel</a>
+
                 {% endif %}
               {% else %}
                 <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
