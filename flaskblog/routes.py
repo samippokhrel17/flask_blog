@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, session 
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post
+from flaskblog.models import User, Post, Category
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -14,7 +14,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/home")
 def home():
     posts = Post.query.filter_by(is_published=True)
-    return render_template('home.html', posts=posts)
+    categories = Category.query.all()
+    return render_template('home.html', posts=posts,categories=categories)
 
 
 @app.route("/about")
@@ -94,18 +95,56 @@ def account():
                            image_file=image_file, form=form)
 
 
+# @app.route("/post/new", methods=['GET', 'POST'])
+# @login_required
+# def new_post():
+#     form = PostForm()
+
+#     categories = Category.query.all()
+#     form.category_id.choices = [(category.id, category.name) for category in categories]
+
+#     #form.category.choices = [(category.id, category.name) for category in Category.query.all()]
+
+#     if form.validate_on_submit():
+#         # default_category_id = 1
+#         post = Post(title=form.title.data, content=form.content.data, author=current_user, is_published=form.is_published.data, category_id=form.category_id.data)
+
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your post has been created!', 'success')
+#         return redirect(url_for('home'))
+#     return render_template('create_post.html', title='New Post',
+#                            form=form, legend='New Post')
+
+
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
+
+    # categories = Category.query.all()
+    # form.category_id.choices = [(category.id, category.name) for category in categories]
+
     if form.validate_on_submit():
-        post = Post(title=form.title.data, content=form.content.data, author=current_user,is_published=form.is_published.data)
-        db.session.add(post)
-        db.session.commit()
+        print("12345")
+        post = Post(
+            title=form.title.data,
+            content=form.content.data,
+            author=current_user,
+            is_published=form.is_published.data,
+            #category_id=1
+            category_id= current_user.category_permission[0].category.id # Use form.category_id.data to get the selected category ID
+        )
+        try:
+           db.session.add(post)
+           db.session.commit()
+        except Exception as e:
+            print(e)
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post',
-                           form=form, legend='New Post')
+
+    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
+
 
 
 @app.route("/post/<int:post_id>")
@@ -194,3 +233,32 @@ def creat_admin():
         return redirect(url_for('home'))  # Redirect to another page after successful creation
 
     return render_template("creat_admin.html")
+
+# Example route that checks category permissions
+@app.route('/category/<category_name>')
+def category_content(category_name):
+    if has_category_permission(current_user, category_name):
+        # User has permission to access the category
+        # Your logic here
+        return render_template('category_content.html', category_name=category_name)
+    else:
+        flash("You do not have permission to access this category.")
+        return redirect(url_for('home'))
+
+# Route to handle user input for adding category permissions
+@app.route('/add_category_permission', methods=['POST'])
+def add_category_permission():
+    category_name = request.form.get('category_name')
+    
+    # Ensure that the category_name is valid and not empty
+    
+    if category_name:
+        # Add the category permission to the current user
+        permission = CategoryPermission(user_id=current_user.id, category_name=category_name)
+        db.session.add(permission)
+        db.session.commit()
+        flash(f'Permission added for category: {category_name}')
+    else:
+        flash('Invalid category name')
+
+    return redirect(url_for('home'))

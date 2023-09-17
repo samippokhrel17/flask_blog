@@ -1,9 +1,9 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from flask_login import current_user
-from wtforms import StringField, PasswordField, SubmitField, BooleanField ,TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField ,TextAreaField, SelectField 
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from flaskblog.models import User
+from flaskblog.models import User, Category
 
 
 class RegistrationForm(FlaskForm):
@@ -60,7 +60,11 @@ class UpdateAccountForm(FlaskForm):
 
 
 class PostForm(FlaskForm):
-    title = StringField('Title',validators=[DataRequired(), ])
+    title = StringField('Title',validators=[DataRequired() ])
     content = TextAreaField('Content',validators=[DataRequired()])
     is_published=BooleanField('Publish')
+
+    # # category_id=StringField('Category')
+    # category_id = SelectField('Category', coerce=int,validators=[DataRequired()])
     submit = SubmitField('Post')
+    # permission = SelectField('Permission',validators=[DataRequired()])
