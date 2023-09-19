@@ -4,9 +4,9 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, session 
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
-from flaskblog.models import User, Post, Category
+from flaskblog.models import User, Post, Category,Image as Photo
 from flask_login import login_user, current_user, logout_user, login_required
-
+from werkzeug.utils import secure_filename
 
 
 
@@ -126,7 +126,7 @@ def new_post():
     # form.category_id.choices = [(category.id, category.name) for category in categories]
 
     if form.validate_on_submit():
-        print("12345")
+
         post = Post(
             title=form.title.data,
             content=form.content.data,
@@ -138,8 +138,23 @@ def new_post():
         try:
            db.session.add(post)
            db.session.commit()
+           image = form.image.data
+           if image:
+                print("oddu")
+                print(post.id)
+                filename = secure_filename(image.filename)
+                image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))  # Save the image to a folder
+                
+                # Create a new Image record and associate it with the post
+                image_record = Photo(filename=filename, post=post)
+                db.session.add(image_record)
+                db.session.commit()
+                print("123helo")
+
         except Exception as e:
             print(e)
+
+
         flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
 

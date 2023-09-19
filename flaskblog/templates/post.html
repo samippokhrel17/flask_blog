@@ -14,7 +14,12 @@
         {% endif %}
       </div>
       <h2 class="article-title">{{ post.title }}</h2>
-      <p class="article-content">{{ post.content }}</p>
+      <p class="article-content">{{ post.content|safe }}</p>
+
+      {% for image in post.images %}
+            <img src="{{ url_for('static', filename='post_images/' + image.filename) }}" alt="Post Image">
+      {% endfor %}
+
     </div>
   </article>
   <!-- Modal -->

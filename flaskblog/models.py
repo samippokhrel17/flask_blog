@@ -3,7 +3,23 @@ from flask import Flask, abort, flash, redirect, url_for, render_template
 from flaskblog import db, login_manager, admin
 from flask_login import UserMixin, current_user
 from flask_admin.contrib.sqla import ModelView
+# from flaskblog.models import Image
 
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    image_file = db.Column(db.String(20), nullable=False,
+                           default='default.jpg')
+    password = db.Column(db.String(60), nullable=False)
+    posts = db.relationship('Post', backref='author', lazy=True)
+    is_admin = db.Column(db.Boolean, default=False)
+    category_permission = db.relationship(
+        'CategoryPermission', backref='user', lazy=True)
+
+    def __repr__(self):  # object to string representation.
+        return f"{self.username}({self.id})"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -26,20 +42,20 @@ class CategoryPermission(db.Model):
 # for table creation in DB
 
 
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False,
-                           default='default.jpg')
-    password = db.Column(db.String(60), nullable=False)
-    posts = db.relationship('Post', backref='author', lazy=True)
-    is_admin = db.Column(db.Boolean, default=False)
-    category_permission = db.relationship(
-        'CategoryPermission', backref='user', lazy=True)
+# class User(db.Model, UserMixin):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(20), unique=True, nullable=False)
+#     email = db.Column(db.String(120), unique=True, nullable=False)
+#     image_file = db.Column(db.String(20), nullable=False,
+#                            default='default.jpg')
+#     password = db.Column(db.String(60), nullable=False)
+#     posts = db.relationship('Post', backref='author', lazy=True)
+#     is_admin = db.Column(db.Boolean, default=False)
+#     category_permission = db.relationship(
+#         'CategoryPermission', backref='user', lazy=True)
 
-    def __repr__(self):  # object to string representation.
-        return f"{self.username}({self.id})"
+#     def __repr__(self):  # object to string representation.
+#         return f"{self.username}({self.id})"
 
 
 # class Controller(ModelView):
@@ -83,7 +99,7 @@ class Post(db.Model):
         'category.id'), nullable=False)
     category = db.relationship('Category',backref='post')
     user = db.relationship('User',backref='post')
-    
+    image = db.relationship('Image', backref='post', lazy=True)
     #permission= db.Column(db.Integer, db.ForeignKey('permission.id'), nullable=False)
     # category=db.relationship('Category',backref='post',lazy=True)
 
@@ -111,7 +127,7 @@ class PostView(ModelView):
 
 
     def is_accessible(self):
-        print(current_user.category_permission[0].category)
+        #print(current_user.category_permission[0].category)
         return current_user.is_authenticated and current_user.is_admin
     
 
@@ -126,12 +142,7 @@ class PostView(ModelView):
     #     print('Querying CategoryPermission records')
     #     return super(CategoryPermissionView,self).get_query()    
 
-# Add Flask-Admin views for your models
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Category, db.session))
-admin.add_view(PostView(Post, db.session))
-# admin.add_view(ModelView(CategoryPermission, db.session))
-admin.add_view(CategoryPermissionView(CategoryPermission, db.session))
+
 
 # Define a function to check category permissions
 # Define a function to check category permissions
@@ -147,3 +158,21 @@ def has_category_permission(user, category_name):
 # admin.add_view(Controller(User, db.session))
 # admin.add_view(Controller(Category, db.session))
 # admin.add_view(Controller(Post, db.session))
+
+class Image(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(100), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=True)
+
+    def __repr__(self):
+        return self.filename
+
+
+
+# Add Flask-Admin views for your models
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Category, db.session))
+admin.add_view(PostView(Post, db.session))
+# admin.add_view(ModelView(CategoryPermission, db.session))
+admin.add_view(CategoryPermissionView(CategoryPermission, db.session))
+admin.add_view(ModelView(Image, db.session))

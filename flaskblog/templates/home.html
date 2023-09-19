@@ -13,7 +13,11 @@
               </p>
             </div>
             <h2><a class="article-title" href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a></h2>
-            <p class="article-content">{{ post.content }}</p>
+            <p class="article-content">{{ post.content|safe }}</p>
+            {% if post.image %}
+                <p>{{post.image[0]}}</p>
+                <img class="w-25" src="/static/images/{{post.image[0]}}" alt="" srcset=""/>
+            {%endif%}
           </div>
         </article>
         {% endfor %}

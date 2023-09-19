@@ -20,12 +20,14 @@
             <th>id</th>
             <th>username</th>
             <th>email</th>
+            <th>Roles</th>
         </tr>
         {% for user in data  %}
         <tr>
             <td>{{user.id}}</td>
             <td>{{user.username}}</td>
             <td>{{user.email}}</td>
+            <td>{{user.category_permission[0].category}}</td>
         </tr>
         {% endfor %}
     </table>
