@@ -23,12 +23,14 @@
             <th>Roles</th>
         </tr>
         {% for user in data  %}
+        {% if user.category_permission|length != 0 %}
         <tr>
             <td>{{user.id}}</td>
             <td>{{user.username}}</td>
             <td>{{user.email}}</td>
             <td>{{user.category_permission[0].category}}</td>
         </tr>
+        {%endif%}
         {% endfor %}
     </table>
 {% endblock content %}

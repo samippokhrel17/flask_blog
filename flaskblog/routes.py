@@ -126,14 +126,18 @@ def new_post():
     # form.category_id.choices = [(category.id, category.name) for category in categories]
 
     if form.validate_on_submit():
-
+        
+        if len(current_user.category_permission) == 0:
+            return redirect('/')
+        
         post = Post(
             title=form.title.data,
             content=form.content.data,
             author=current_user,
             is_published=form.is_published.data,
             #category_id=1
-            category_id= current_user.category_permission[0].category.id # Use form.category_id.data to get the selected category ID
+            category_id= current_user.category_permission[0].category.id 
+
         )
         try:
            db.session.add(post)
@@ -203,13 +207,13 @@ def delete_post(post_id):
 @app.route("/table")
 @login_required
 def table():
-    is_admin = current_user.is_admin
+    # is_admin = current_user.is_admin
     users= User.query.all()
-    if is_admin== True:
-        return render_template('table.html', title='Table',data=users)  
-    else:
-        flash("Sorry you must be the admin to access Admin Page") 
-        return redirect(url_for('home'))
+    # if is_admin== True:
+    return render_template('table.html', title='Table',data=users)  
+    # else:
+    #     flash("Sorry you must be the admin to access Admin Page") 
+    #     return redirect(url_for('home'))
 
 
 
