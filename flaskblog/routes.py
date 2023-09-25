@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 
 
 
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -281,3 +282,7 @@ def add_category_permission():
         flash('Invalid category name')
 
     return redirect(url_for('home'))
+
+
+
+

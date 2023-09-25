@@ -166,6 +166,36 @@ class Image(db.Model):
 
     def __repr__(self):
         return self.filename
+    
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    create = db.Column(db.Boolean,default=False)
+    read = db.Column(db.Boolean,default=False)
+    update = db.Column(db.Boolean,default=False)
+    delete = db.Column(db.Boolean,default=False)
+    category = db.relationship('Category',backref='role')
+    user = db.relationship('User',backref='role')
+
+class RoleView(ModelView):
+    column_hide_backrefs = False
+    column_list = ('user', 'category','create','read','update','delete') #user catagory ra post hane !!categoty permission mile na
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.is_admin
+    
+    # def get_query(self):
+    #     print('Querying CategoryPermission records')
+    #     return super(CategoryPermissionView,self).get_query()
+    
+
+
+
+    
+
+
+
 
 
 
@@ -176,3 +206,4 @@ admin.add_view(PostView(Post, db.session))
 # admin.add_view(ModelView(CategoryPermission, db.session))
 admin.add_view(CategoryPermissionView(CategoryPermission, db.session))
 admin.add_view(ModelView(Image, db.session))
+admin.add_view(RoleView(Role, db.session))
