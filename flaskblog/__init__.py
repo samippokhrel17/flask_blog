@@ -1,12 +1,12 @@
-from flask import Flask, abort 
-from flask_sqlalchemy import SQLAlchemy
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
-from flask_admin import Admin 
-from flask_migrate import Migrate
-import flaskblog
 import os
+import flaskblog
+from flask_admin import Admin 
+from flask import Flask, abort 
+from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 from flask_ckeditor import CKEditor
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
 
 app = Flask(__name__)
