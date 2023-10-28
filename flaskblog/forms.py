@@ -6,7 +6,6 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField ,TextA
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from flaskblog.models import User, Category , Image
 
-
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
@@ -28,7 +27,6 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError('That email is taken. Please choose a different one.')
-
 
 class LoginForm(FlaskForm):
     email = StringField('Email',
@@ -58,16 +56,9 @@ class UpdateAccountForm(FlaskForm):
             if user:
                 raise ValidationError('That email is taken. Please choose a different one.')
 
-
-
 class PostForm(FlaskForm):
     title = StringField('Title',validators=[DataRequired() ])
-    #content = TextAreaField('Content',validators=[DataRequired()])
     content = CKEditorField('Content',validators=[DataRequired()])
     is_published=BooleanField('Publish')
-
-    # # category_id=StringField('Category')
-    # category_id = SelectField('Category', coerce=int,validators=[DataRequired()])
     image = FileField('Image', validators=[ FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!')])
     submit = SubmitField('Post')
-    # permission = SelectField('Permission',validators=[DataRequired()])

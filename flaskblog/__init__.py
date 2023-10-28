@@ -1,4 +1,4 @@
-from flask import Flask, abort 
+from flask import Flask, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
@@ -7,7 +7,6 @@ from flask_migrate import Migrate
 import flaskblog
 import os
 from flask_ckeditor import CKEditor
-
 
 app = Flask(__name__)
 
@@ -26,6 +25,5 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info' 
 
 from flaskblog import routes
-
 
 FLASK_APP=flaskblog
