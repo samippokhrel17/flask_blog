@@ -8,7 +8,6 @@ from flask_ckeditor import CKEditor
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
-
 app = Flask(__name__)
 
 ckeditor = CKEditor(app)
@@ -26,6 +25,5 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info' 
 
 from flaskblog import routes
-
 
 FLASK_APP=flaskblog
