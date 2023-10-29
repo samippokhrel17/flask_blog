@@ -8,9 +8,6 @@ from flaskblog.models import User, Post, Category,Image as Photo
 from flask_login import login_user, current_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 
-
-
-
 @app.route("/")
 @app.route("/home")
 def home():
@@ -18,11 +15,9 @@ def home():
     categories = Category.query.all()
     return render_template('home.html', posts=posts,categories=categories)
 
-
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
-
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
@@ -54,12 +49,10 @@ def login():
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
-
 @app.route("/logout")
 def logout():
     logout_user()
     return redirect(url_for('home'))
-
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -73,7 +66,6 @@ def save_picture(form_picture):
     i.save(picture_path)
 
     return picture_fn
-
 
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
@@ -95,36 +87,10 @@ def account():
     return render_template('account.html', title='Account',
                            image_file=image_file, form=form)
 
-
-# @app.route("/post/new", methods=['GET', 'POST'])
-# @login_required
-# def new_post():
-#     form = PostForm()
-
-#     categories = Category.query.all()
-#     form.category_id.choices = [(category.id, category.name) for category in categories]
-
-#     #form.category.choices = [(category.id, category.name) for category in Category.query.all()]
-
-#     if form.validate_on_submit():
-#         # default_category_id = 1
-#         post = Post(title=form.title.data, content=form.content.data, author=current_user, is_published=form.is_published.data, category_id=form.category_id.data)
-
-#         db.session.add(post)
-#         db.session.commit()
-#         flash('Your post has been created!', 'success')
-#         return redirect(url_for('home'))
-#     return render_template('create_post.html', title='New Post',
-#                            form=form, legend='New Post')
-
-
-@app.route("/post/new", methods=['GET', 'POST'])
+app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
-
-    # categories = Category.query.all()
-    # form.category_id.choices = [(category.id, category.name) for category in categories]
 
     if form.validate_on_submit():
         
@@ -208,37 +174,13 @@ def delete_post(post_id):
 @app.route("/table")
 @login_required
 def table():
-    # is_admin = current_user.is_admin
     users= User.query.all()
-    # if is_admin== True:
     return render_template('table.html', title='Table',data=users)  
-    # else:
-    #     flash("Sorry you must be the admin to access Admin Page") 
-    #     return redirect(url_for('home'))
-
-
-
-
-# @app.route("/creat_admin", methods=['GET', 'POST'])
-# def creat_admin():
-#     if request.method == 'POST':
-#         hashed_password = bcrypt.generate_password_hash(request.form['password']).decode('utf-8')
-#         new_user=User(email=request.form['email'],password=hashed_password,username=request.form['username'],is_admin=True)
-#         db.session.add(new_user)
-#         db.session.commit()
-#         return "Admin Account Created"
-    
-#     return render_template("admin_signup.html")
-
-
-
-
 
 @app.route("/creat_admin", methods=['GET', 'POST'])
 @login_required  # Add the login_required decorator
 def creat_admin():
     # Check if the current user is an admin
-    
     if not current_user.is_admin:
         flash("You do not have permission to access this page.", "danger")
         return redirect(url_for('home'))  # Redirect to another page (e.g., home page) or handle the access denial
@@ -271,7 +213,6 @@ def add_category_permission():
     category_name = request.form.get('category_name')
     
     # Ensure that the category_name is valid and not empty
-    
     if category_name:
         # Add the category permission to the current user
         permission = CategoryPermission(user_id=current_user.id, category_name=category_name)
@@ -282,7 +223,3 @@ def add_category_permission():
         flash('Invalid category name')
 
     return redirect(url_for('home'))
-
-
-
-
