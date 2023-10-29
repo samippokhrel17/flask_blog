@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
+from flask_login import current_user
 from flask_ckeditor import CKEditorField 
 from flask_wtf.file import FileField, FileAllowed
-from flask_login import current_user
+from flaskblog.models import User, Category , Image
 from wtforms import StringField, PasswordField, SubmitField, BooleanField ,TextAreaField, SelectField , FileField,MultipleFileField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
-from flaskblog.models import User, Category , Image
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username',
